@@ -93,33 +93,50 @@ class Bloque:
         print(f'Hash del Bloque Anterior: {self.hashPrevio.hex()}')
 
 
-class BloqueOrigen (Bloque):
-    def __init__(self, hashPrevio=b'\x00' * 32, ceros=20):
-        super().__init__(hashPrevio, ceros)
-
-    def minarBloqueOrigen (self):
-        Bloque.minar(self)
-        print("\nBloque inicial minado:")
-        Bloque.darInfo(self)
-
-
-class BloqueNormal (Bloque):
-    def __init__(self, hashPrevio=BloqueOrigen.hash, ceros=BloqueOrigen.ceros):
-        super().__init__(hashPrevio, ceros)
-
-    def minarBloqueNormal (self):
-        i = 2
-        self.prev = BloqueOrigen.hash
-        self.ceros = BloqueOrigen.ceros + 1
-        Bloque.minar(self)
-        print(f"\n Bloque {i} minado: ")
-        Bloque.darInfo
-        self.valido = Bloque.hashValido(self.hash)
-        print("¿El hash generado es válido?", self.valido)
+class Cadena:
+    def __init__(self, tiempoObjetivo = 15.0, dificultadInicial=20):
+        self.bloques = []
+        self.tiempoObjetivo = tiempoObjetivo
+        self.minCeros = 20
+        self.maxCeros = 40
+        self.ajuste = 20
+        self.dificultadObjetivo = dificultadInicial
+        self.crear_genesis()
 
 
-def adicionarBloque():
-    return 0;
+    def crear_genesis (self):
+        genesis = Bloque(b'\x00' * 32, self.dificultadObjetivo)
+        genesis.minar()
+        print("\nBloque génesis minado:")
+        genesis.darInfo()
+        self.bloques.append(genesis)
+
+
+    def agregar_bloque (self):
+        previo = self.bloques[-1]
+        tiempoAnterior = previo.segundos
+        nuevaDificultad = self.ajustarDificultad(tiempoAnterior, previo.ceros)
+        bloque = Bloque(previo.hash, nuevaDificultad)
+        bloque.minar()
+        print("\nNuevo bloque minado:")
+        bloque.darInfo()
+        self.bloques.append(bloque)
+
+
+    def ajustarDificultad (self, tiempoBloqueAnterior, cerosActuales):
+        diferencia = self.tiempoObjetivo - tiempoBloqueAnterior
+        if abs(diferencia) >= 2:
+            paso = 2
+        else:
+            paso = 1
+        if tiempoBloqueAnterior < self.tiempoObjetivo:
+            nuevo = cerosActuales + paso
+        elif tiempoBloqueAnterior > self.tiempoObjetivo:
+            nuevo = cerosActuales - paso
+        else:
+            nuevo = cerosActuales
+        return max(self.minCeros, min(self.maxCeros, nuevo))
+
 
 def verificarCadena():
     return 0;
@@ -136,16 +153,9 @@ def borrarBloque():
 
 def main():
     # Génesis: prev_hash de ceros
-    bloqueInicial = BloqueOrigen(ceros=20)
-    bloqueInicial.minarBloqueOrigen()
-
-    # Verificación explícita
-    valido = bloqueInicial.hashValido(bloqueInicial.hash)
-    print("¿Hash válido según dificultad?", valido)
-
-    # Bloque 2 (prueba)
-    bloqueDos = BloqueNormal()
-    bloqueDos.minarBloqueNormal()
+    cadena = Cadena(dificultadInicial=20)
+    cadena.agregar_bloque()
+    
 
     return 0;
 
