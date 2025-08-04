@@ -2,6 +2,17 @@ import datetime
 import hashlib
 import time
 
+
+def hacerMenu ():
+    print('\n-----------------------------------')
+    print('Simulación de Blockchain en Python')
+    print('\n1. Crear la Cadena \n2. Adicionar un Bloque \n3. Verificar la Cadena \n4. Leer un Bloque \n5. Eliminar un Bloque \n6. Alterar un Bloque \n7. Simular Creación \n8. Salir')
+    try:
+        return int(input('\nElección: '))
+    except ValueError:
+        return None
+
+
 class Bloque:
     def __init__ (self, hashPrevio: bytes, ceros: int):
         self.hashPrevio = hashPrevio # Hash del bloque anterior en la cadena
@@ -116,6 +127,7 @@ class Cadena:
         previo = self.bloques[-1]
         tiempoAnterior = previo.segundos
         nuevaDificultad = self.ajustarDificultad(tiempoAnterior, previo.ceros)
+
         bloque = Bloque(previo.hash, nuevaDificultad)
         bloque.minar()
         print("\nNuevo bloque minado:")
@@ -123,12 +135,9 @@ class Cadena:
         self.bloques.append(bloque)
 
 
-    def ajustarDificultad (self, tiempoBloqueAnterior, cerosActuales):
+    def ajustarDificultad (self, tiempoBloqueAnterior, cerosActuales): # Cambiar el paso a 2
         diferencia = self.tiempoObjetivo - tiempoBloqueAnterior
-        if abs(diferencia) >= 2:
-            paso = 2
-        else:
-            paso = 1
+        paso = 1
         if tiempoBloqueAnterior < self.tiempoObjetivo:
             nuevo = cerosActuales + paso
         elif tiempoBloqueAnterior > self.tiempoObjetivo:
@@ -136,28 +145,141 @@ class Cadena:
         else:
             nuevo = cerosActuales
         return max(self.minCeros, min(self.maxCeros, nuevo))
+    
+
+    def verificarCadena(self):
+        resultados = []
+        cadenaRota = False  # indica si ya se detectó una corrupción antes
+
+        for i, bloque in enumerate(self.bloques):
+            mensajes = []
+            previoEsperado = b'\x00' * 32 if i == 0 else self.bloques[i - 1].hash
+
+            # 1. Enlace
+            if bloque.hashPrevio != previoEsperado:
+                mensajes.append("prev_hash incorrecto")
+                cadenaRota = True
+
+            # 2. Hash recalculado
+            recalculado = bloque.calcularHash(bloque.nonce)
+            if recalculado != bloque.hash:
+                messages = "Hash manipulado (contenido + nonce no coincide)"
+                mensajes.append(messages)
+                cadenaRota = True
+
+            # 3. Dificultad
+            if not bloque.hashValido(bloque.hash):
+                mensajes.append(f"Dificultad no satisfecha (esperados {bloque.ceros} ceros)")
+                cadenaRota = True
+
+            # 4. Contaminación en cascada como advertencia, si no tiene fallo directo
+            if cadenaRota and not mensajes:
+                mensajes.append("Posiblemente comprometido por corrupción previa")
+
+            if not mensajes:
+                resultados.append(f"Bloque {i}: OK")
+            else:
+                resultados.append(f"Bloque {i}: {' y '.join(mensajes)}")
+
+        return resultados
 
 
-def verificarCadena():
-    return 0;
 
-def leerBloque():
-    return 0;
+    def leerBloque (self):
+        indice = int(input('\nIngrese el índice del bloque que quiere conocer (recuerde que el génesis tiene índice 0): '))
+        if not (0 <= indice < len(self.bloques)):
+            raise IndexError(f"Índice {indice} fuera de rango. La cadena tiene {len(self.bloques)} bloques.")
+        print(f'Información del bloque con índice: {indice} \n')
+        bloque = self.bloques[indice]
+        bloque.darInfo()
 
-def modificarBloque():
-    return 0;
+    
+    def borrarBloque (self):
+        indice = int(input('\nIngrese el índice del bloque que quiere eliminar (recuerde que el génesis tiene índice 0): '))
+        if not (0 <= indice < len(self.bloques)):
+            raise IndexError(f"Índice {indice} fuera de rango. La cadena tiene {len(self.bloques)} bloques.")
+        self.bloques = self.bloques[:indice]
+        print('Bloque eliminado satisfactoriamente')
 
-def borrarBloque():
-    return 0;
+
+    def alterarBloque(self):
+        indice = int(input('\nIngrese el índice del bloque que quiere alterar (recuerde que el génesis tiene índice 0): '))
+        if not (0 <= indice < len(self.bloques)):
+            raise IndexError(f"Índice {indice} fuera de rango. La cadena tiene {len(self.bloques)} bloques.")
+        
+        bloque = self.bloques[indice]
+        bloque.nonce += 1
+        bloque.tiempo = datetime.datetime.now()
+
+
+    def romper_encadenamiento(self, indice: int):
+        
+        if not (0 <= indice < len(self.bloques) - 1):
+            raise IndexError("Índice fuera de rango o no hay siguiente bloque.")
+        siguiente = self.bloques[indice + 1]
+        # Poner un prev_hash inválido (por ejemplo ceros distintos del real)
+        siguiente.hashPrevio = b'\x01' + siguiente.hashPrevio[1:]
+        
 
 
 def main():
-    # Génesis: prev_hash de ceros
-    cadena = Cadena(dificultadInicial=20)
-    cadena.agregar_bloque()
-    
+    cadena = None
 
-    return 0;
+    while True:
+        respuesta = hacerMenu()
+        if respuesta == 1:
+            cadena = Cadena(dificultadInicial=20)
+
+        elif respuesta == 2:
+            if cadena is None:
+                print("Primero crea la cadena (opción 1).")
+            else:
+                cadena.agregar_bloque()
+
+        elif respuesta == 3:
+            if cadena is None:
+                print('Primero crea la cadena (opción 1)')
+            else:
+                errores = cadena.verificarCadena()
+                for linea in errores:
+                    print(linea)
+    
+        elif respuesta == 4:
+            # Leer un bloque (deberías pedir índice)
+            if cadena is None:
+                print('Primero crea la cadena (opción 1)')
+            else:
+                cadena.leerBloque()
+
+        elif respuesta == 5:
+            # Eliminar un bloque
+            if cadena is None:
+                print('Primero crea la cadena (opción 1)')
+            else:
+                cadena.borrarBloque()
+
+        elif respuesta == 6:
+            # Alterar un bloque
+            if cadena is None:
+                print('Primero crea la cadena (opción 1)')
+            else:
+                cadena.alterarBloque()
+
+        elif respuesta == 7:
+            cantidad = int(input('¿Cuántos bloques deseas crear? '))
+            if cadena is None:
+                cadena = Cadena(dificultadInicial=20)
+            
+            for _ in range(cantidad):
+                cadena.agregar_bloque()
+
+        elif respuesta == 8:
+            break
+
+        else:
+            print('Error, respuesta ingresada incorrecta, vuelva a intentarlo...')
+
+    return 0
 
 if __name__ == "__main__":
     main()
