@@ -12,6 +12,7 @@ def hacerMenu ():
     except ValueError:
         return None
 
+
 # Clase Bloque que contiene funciones muy importantes
 class Bloque:
     def __init__ (self, hashPrevio: bytes, ceros: int):
@@ -70,10 +71,10 @@ class Bloque:
                                             # - bitsSobrantes = 4
                                             # - mask = 0xff << (8-4) = 0xff << 4 = 11110000 en binario
                                             # - Si hashBytes[reps] es por ejemplo 00010111, entonces hashBytes[reps] & mask da 00010000.
-                                            # - Como el resultado no es cero, el hash no cumple con el requisito y retornamos False.
-                                                                                            
+                                            # - Como el resultado no es cero, el hash no cumple con el requisito y retornamos False.                                                                            
         return True # Si no hemos retornado False hasta el momento, entonces el hash es válido
     
+
     # Función para coger un bloque y minarlo para calcular el hash y ver si es válido y ya entonces determinar la info. del bloque
     def minar (self):
         self.inicio = time.time() # Se determina el tiempo en el que inicia la minería
@@ -90,10 +91,12 @@ class Bloque:
                 return # Se termina
             nonce += 1 # Si el hash no es válido entonces se sumenta el nonce en 1
 
+
     # Devuelve el hash convertido en Hexa para verlo
     def hashEnHex (self) -> str:
         return self.hash.hex() if self.hash else ''
     
+
     # Muestra los datos relevantes del bloque
     def darInfo (self):
         print(f'Ceros Objetivo: {self.ceros}')
@@ -102,6 +105,7 @@ class Bloque:
         print(f'Hash en Hexa: {self.hashEnHex()}')
         print(f'Tiempo en Segundos para Minarlo: {self.segundos} segundos')
         print(f'Hash del Bloque Anterior: {self.hashPrevio.hex()}')
+
 
 # Clase Cadena para todo lo relacionado con la formación de estas
 class Cadena:
@@ -114,6 +118,7 @@ class Cadena:
         self.dificultadObjetivo = dificultadInicial
         self.crear_genesis()
 
+
     # Crea el primer bloque de la cadena
     def crear_genesis (self):
         genesis = Bloque(b'\x00' * 32, self.dificultadObjetivo) # Es un bloque con un hash previo de puros ceros y objetivo de 20 ceros
@@ -121,6 +126,7 @@ class Cadena:
         print("\nBloque génesis minado:")
         genesis.darInfo()
         self.bloques.append(genesis)
+
 
     # Crea los siguientes bloques de la cadena distintos al de origen o génesis
     def agregar_bloque (self):
@@ -134,6 +140,7 @@ class Cadena:
         bloque.darInfo()
         self.bloques.append(bloque)
 
+
     # Se ajusta la cantidad de ceros que se necesitan en el hash
     def ajustarDificultad (self, tiempoBloqueAnterior, cerosActuales): 
         diferencia = self.tiempoObjetivo - tiempoBloqueAnterior
@@ -146,6 +153,7 @@ class Cadena:
             nuevo = cerosActuales
         return max(self.minCeros, min(self.maxCeros, nuevo)) # Sirve para asegurar que la dificultad no sea menor a la deseada ni mayor a la deseada
     
+
     # Revisa todos los bloques de la lista (cadena) y revisa que estén bien
     def verificarCadena(self):
         resultados = []
@@ -153,29 +161,31 @@ class Cadena:
 
         for i, bloque in enumerate(self.bloques): # Itera todos los bloques y crea un contador del índice de cada uno
             mensajes = []
-            if i == 0: # Si es el primer bloque
-                previoEsperado = b'\x00' * 32  
-            else: 
-                self.bloques[i - 1].hash
-
-            # 1. Enlace
-            if bloque.hashPrevio != previoEsperado:
-                mensajes.append("prev_hash incorrecto")
+            
+            # Verificar integridad del hash actual
+            nonce = bloque.nonce
+            hashViejo = bloque.hash
+            hashNuevo = bloque.calcularHash(nonce)
+            if hashNuevo != hashViejo:
+                mensajes.append("Hash incorrecto")
+                cadenaRota = True
+            
+            # Verificar que el hash cumpla la dificultad
+            if not bloque.hashValido(hashViejo):
+                mensajes.append(f'No cumple el requisito de {bloque.ceros} ceros')
                 cadenaRota = True
 
-            # 2. Hash recalculado
-            recalculado = bloque.calcularHash(bloque.nonce)
-            if recalculado != bloque.hash:
-                messages = "Hash manipulado (contenido + nonce no coincide)"
-                mensajes.append(messages)
+            # Verificar enlace con bloque previo
+            if i > 0:
+                hashPrevioEsperado = self.bloques[i-1].hash
+                if bloque.hashPrevio != hashPrevioEsperado:
+                    mensajes.append('Referencia al bloque previo incorrecta')
+                    cadenaRota = True
+            elif bloque.hashPrevio != b'\x00' * 32:
+                mensajes.append('Bloque génesis con hash previo incorrecto')
                 cadenaRota = True
 
-            # 3. Dificultad
-            if not bloque.hashValido(bloque.hash):
-                mensajes.append(f"Dificultad no satisfecha (esperados {bloque.ceros} ceros)")
-                cadenaRota = True
-
-            # 4. Contaminación en cascada si no tiene fallo directo
+            # Contaminación en cascada si no tiene fallo directo
             if cadenaRota and not mensajes:
                 mensajes.append("Posiblemente comprometido por corrupción previa")
 
@@ -196,6 +206,7 @@ class Cadena:
         bloque = self.bloques[indice]
         bloque.darInfo()
 
+
     # Sirve para borrar un bloque cualquiera (y los que le siguen) a partir de un índice
     def borrarBloque (self):
         indice = int(input('\nIngrese el índice del bloque que quiere eliminar (recuerde que el génesis tiene índice 0): '))
@@ -203,6 +214,7 @@ class Cadena:
             raise IndexError(f"Índice {indice} fuera de rango. La cadena tiene {len(self.bloques)} bloques.")
         self.bloques = self.bloques[:indice]
         print('Bloque eliminado satisfactoriamente')
+
 
     # Con esta se puede modificar un bloque, cambiando su nonce y timestamp para alterarlo
     def alterarBloque(self):
@@ -213,6 +225,7 @@ class Cadena:
         bloque = self.bloques[indice]
         bloque.nonce += 1
         bloque.tiempo = datetime.datetime.now()
+
 
     # La puse para llamarla en alterar bloque, pero no es necesario
     def romper_encadenamiento(self, indice: int):
@@ -246,7 +259,7 @@ def main():
                     print(linea)
     
         elif respuesta == 4:
-            # Leer un bloque (deberías pedir índice)
+            # Leer un bloque
             if cadena is None:
                 print('Primero crea la cadena (opción 1)')
             else:
