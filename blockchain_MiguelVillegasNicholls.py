@@ -2,8 +2,262 @@ import datetime
 import hashlib
 import time
 import os
+import subprocess
+import json
 
 # Código con las adiciones para el parcial 2
+
+# ========== FUNCIONES GPG ==========
+
+def ejecutar_gpg(comando):
+    """Ejecuta un comando GPG y retorna el resultado"""
+    try:
+        resultado = subprocess.run(comando, shell=True, capture_output=True, text=True)
+        return resultado.returncode, resultado.stdout, resultado.stderr
+    except Exception as e:
+        return -1, "", str(e)
+
+def generar_claves_gpg():
+    """Genera un par de claves GPG de forma interactiva"""
+    print('\n=== GENERAR PAR DE CLAVES GPG ===')
+    print('Se te pedirán algunos datos para generar las claves:')
+    print('- Nombre completo')
+    print('- Dirección de email') 
+    print('- Comentario (opcional)')
+    print('- Contraseña para proteger la clave privada')
+    
+    input('\nPresiona Enter para continuar...')
+    
+    # Comando para generar claves de forma interactiva
+    comando = 'gpg --full-generate-key'
+    codigo, salida, error = ejecutar_gpg(comando)
+    
+    if codigo == 0:
+        print('\n✅ Claves generadas exitosamente!')
+        listar_claves_gpg()
+    else:
+        print(f'\n❌ Error generando claves: {error}')
+
+def listar_claves_gpg():
+    """Lista las claves GPG disponibles"""
+    print('\n=== CLAVES GPG DISPONIBLES ===')
+    
+    # Listar claves públicas
+    print('\n--- Claves Públicas ---')
+    comando = 'gpg --list-keys --keyid-format LONG'
+    codigo, salida, error = ejecutar_gpg(comando)
+    if salida:
+        print(salida)
+    else:
+        print('No hay claves públicas.')
+    
+    # Listar claves privadas
+    print('\n--- Claves Privadas ---')
+    comando = 'gpg --list-secret-keys --keyid-format LONG'
+    codigo, salida, error = ejecutar_gpg(comando)
+    if salida:
+        print(salida)
+    else:
+        print('No hay claves privadas.')
+
+def exportar_clave_publica():
+    """Exporta una clave pública en formato ASCII"""
+    print('\n=== EXPORTAR CLAVE PÚBLICA ===')
+    listar_claves_gpg()
+    
+    user_id = input('\nIngresa el email o ID de la clave a exportar: ').strip()
+    if not user_id:
+        print('❌ Debes proporcionar un email o ID.')
+        return
+    
+    nombre_archivo = f'{user_id.replace("@", "_")}_publica.asc'
+    comando = f'gpg --armor --export {user_id} > {nombre_archivo}'
+    codigo, salida, error = ejecutar_gpg(comando)
+    
+    if codigo == 0:
+        print(f'✅ Clave pública exportada a: {nombre_archivo}')
+    else:
+        print(f'❌ Error exportando clave: {error}')
+
+def firmar_documento():
+    """Firma un documento con GPG"""
+    print('\n=== FIRMAR DOCUMENTO ===')
+    
+    archivo = input('Ingresa el nombre del archivo a firmar: ').strip()
+    if not os.path.exists(archivo):
+        print(f'❌ El archivo {archivo} no existe.')
+        return
+    
+    listar_claves_gpg()
+    user_id = input('\nIngresa tu email o ID para firmar: ').strip()
+    
+    # Crear firma detached
+    comando = f'gpg --armor --detach-sign --local-user {user_id} {archivo}'
+    codigo, salida, error = ejecutar_gpg(comando)
+    
+    if codigo == 0:
+        print(f'✅ Archivo firmado! Firma guardada en: {archivo}.asc')
+    else:
+        print(f'❌ Error firmando archivo: {error}')
+
+def verificar_firma():
+    """Verifica la firma de un documento"""
+    print('\n=== VERIFICAR FIRMA ===')
+    
+    archivo = input('Ingresa el nombre del archivo original: ').strip()
+    if not os.path.exists(archivo):
+        print(f'❌ El archivo {archivo} no existe.')
+        return
+    
+    archivo_firma = f'{archivo}.asc'
+    if not os.path.exists(archivo_firma):
+        print(f'❌ El archivo de firma {archivo_firma} no existe.')
+        return
+    
+    comando = f'gpg --verify {archivo_firma} {archivo}'
+    codigo, salida, error = ejecutar_gpg(comando)
+    
+    print('\n--- Resultado de la verificación ---')
+    if salida:
+        print(salida)
+    if error:
+        print(error)
+    
+    if codigo == 0:
+        print('✅ Firma VÁLIDA')
+    else:
+        print('❌ Firma INVÁLIDA o problemas en la verificación')
+
+def cifrar_documento():
+    """Cifra un documento para un destinatario"""
+    print('\n=== CIFRAR DOCUMENTO ===')
+    
+    archivo = input('Ingresa el nombre del archivo a cifrar: ').strip()
+    if not os.path.exists(archivo):
+        print(f'❌ El archivo {archivo} no existe.')
+        return
+    
+    listar_claves_gpg()
+    destinatario = input('\nIngresa el email o ID del destinatario: ').strip()
+    
+    comando = f'gpg --armor --encrypt --recipient {destinatario} {archivo}'
+    codigo, salida, error = ejecutar_gpg(comando)
+    
+    if codigo == 0:
+        print(f'✅ Archivo cifrado! Guardado en: {archivo}.asc')
+    else:
+        print(f'❌ Error cifrando archivo: {error}')
+
+def descifrar_documento():
+    """Descifra un documento cifrado"""
+    print('\n=== DESCIFRAR DOCUMENTO ===')
+    
+    archivo = input('Ingresa el nombre del archivo cifrado (.asc): ').strip()
+    if not os.path.exists(archivo):
+        print(f'❌ El archivo {archivo} no existe.')
+        return
+    
+    comando = f'gpg --decrypt {archivo}'
+    codigo, salida, error = ejecutar_gpg(comando)
+    
+    if codigo == 0:
+        # Guardar el contenido descifrado
+        nombre_descifrado = archivo.replace('.asc', '_descifrado')
+        if archivo.endswith('.asc'):
+            nombre_descifrado = archivo[:-4] + '_descifrado'
+        
+        with open(nombre_descifrado, 'w') as f:
+            f.write(salida)
+        print(f'✅ Archivo descifrado guardado en: {nombre_descifrado}')
+    else:
+        print(f'❌ Error descifrando archivo: {error}')
+
+def firmar_hash_bloque():
+    """Firma el hash de un bloque específico de la blockchain"""
+    print('\n=== FIRMAR HASH DE BLOQUE ===')
+    
+    if 'cadena' not in globals() or globals()['cadena'] is None:
+        print('❌ Primero debes crear la cadena (opción 1).')
+        return
+    
+    try:
+        indice = int(input(f'Ingresa el índice del bloque (0-{len(globals()["cadena"].bloques)-1}): '))
+        if indice < 0 or indice >= len(globals()['cadena'].bloques):
+            print('❌ Índice fuera de rango.')
+            return
+    except ValueError:
+        print('❌ Debes ingresar un número válido.')
+        return
+    
+    bloque = globals()['cadena'].bloques[indice]
+    hash_hex = bloque.hash.hex()
+    
+    print(f'\n--- Información del Bloque {indice} ---')
+    print(f'Hash: {hash_hex}')
+    print(f'Nonce: {bloque.nonce}')
+    print(f'Tiempo: {bloque.tiempo}')
+    
+    # Crear archivo temporal con el hash
+    archivo_hash = f'bloque_{indice}_hash.txt'
+    with open(archivo_hash, 'w') as f:
+        f.write(hash_hex)
+    
+    # Firmar el archivo
+    listar_claves_gpg()
+    user_id = input('\nIngresa tu email o ID para firmar: ').strip()
+    
+    comando = f'gpg --armor --detach-sign --local-user {user_id} {archivo_hash}'
+    codigo, salida, error = ejecutar_gpg(comando)
+    
+    if codigo == 0:
+        print(f'✅ Hash del bloque {indice} firmado!')
+        print(f'   Archivo hash: {archivo_hash}')
+        print(f'   Firma: {archivo_hash}.asc')
+    else:
+        print(f'❌ Error firmando hash: {error}')
+
+def menu_gpg():
+    """Menú de operaciones GPG"""
+    while True:
+        print('\n=== MENÚ GPG ===')
+        print('1. Generar par de claves')
+        print('2. Listar claves')
+        print('3. Exportar clave pública')
+        print('4. Firmar documento')
+        print('5. Verificar firma')
+        print('6. Cifrar documento')
+        print('7. Descifrar documento')
+        print('8. Firmar hash de bloque')
+        print('9. Volver al menú principal')
+        
+        try:
+            opcion = int(input('\nElección: '))
+        except ValueError:
+            print('❌ Ingresa un número válido.')
+            continue
+        
+        if opcion == 1:
+            generar_claves_gpg()
+        elif opcion == 2:
+            listar_claves_gpg()
+        elif opcion == 3:
+            exportar_clave_publica()
+        elif opcion == 4:
+            firmar_documento()
+        elif opcion == 5:
+            verificar_firma()
+        elif opcion == 6:
+            cifrar_documento()
+        elif opcion == 7:
+            descifrar_documento()
+        elif opcion == 8:
+            firmar_hash_bloque()
+        elif opcion == 9:
+            break
+        else:
+            print('❌ Opción inválida.')
+
+# ========== FIN FUNCIONES GPG ==========
 
 # Función para limpiar la pantalla
 def limpiar_pantalla():
@@ -13,7 +267,7 @@ def limpiar_pantalla():
 def hacerMenu ():
     print('\n-----------------------------------')
     print('Simulación de Blockchain en Python')
-    print('\n1. Crear la Cadena \n2. Adicionar un Bloque \n3. Verificar la Cadena \n4. Leer un Bloque \n5. Eliminar un Bloque \n6. Alterar un Bloque \n7. Simular Creación \n8. Ver Estadísticas \n9. Salir')
+    print('\n1. Crear la Cadena \n2. Adicionar un Bloque \n3. Verificar la Cadena \n4. Leer un Bloque \n5. Eliminar un Bloque \n6. Alterar un Bloque \n7. Simular Creación \n8. Ver Estadísticas \n9. Operaciones GPG \n10. Salir')
     try:
         return int(input('\nElección: '))
     except ValueError:
@@ -367,6 +621,10 @@ def main():
                 cadena.obtenerEstadisticas()
 
         elif respuesta == 9:
+            # Operaciones GPG
+            menu_gpg()
+
+        elif respuesta == 10:
             break
 
         else:
