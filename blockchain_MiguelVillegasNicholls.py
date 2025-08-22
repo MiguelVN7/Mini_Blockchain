@@ -1,12 +1,17 @@
 import datetime
 import hashlib
 import time
+import os
+
+# Función para limpiar la pantalla
+def limpiar_pantalla():
+    os.system('clear' if os.name == 'posix' else 'cls')
 
 # Menú principal para el funcionamiento del programa...
 def hacerMenu ():
     print('\n-----------------------------------')
     print('Simulación de Blockchain en Python')
-    print('\n1. Crear la Cadena \n2. Adicionar un Bloque \n3. Verificar la Cadena \n4. Leer un Bloque \n5. Eliminar un Bloque \n6. Alterar un Bloque \n7. Simular Creación \n8. Salir')
+    print('\n1. Crear la Cadena \n2. Adicionar un Bloque \n3. Verificar la Cadena \n4. Leer un Bloque \n5. Eliminar un Bloque \n6. Alterar un Bloque \n7. Simular Creación \n8. Ver Estadísticas \n9. Salir')
     try:
         return int(input('\nElección: '))
     except ValueError:
@@ -99,12 +104,14 @@ class Bloque:
 
     # Muestra los datos relevantes del bloque
     def darInfo (self):
+        print(f'=== INFORMACIÓN DEL BLOQUE ===')
         print(f'Ceros Objetivo: {self.ceros}')
-        print(f'Nonce Usado: {self.nonce}')
+        print(f'Nonce Usado: {self.nonce:,}')
         print(f'Timestamp: {self.tiempo.isoformat()}')
         print(f'Hash en Hexa: {self.hashEnHex()}')
-        print(f'Tiempo en Segundos para Minarlo: {self.segundos} segundos')
+        print(f'Tiempo en Segundos para Minarlo: {self.segundos:.3f} segundos')
         print(f'Hash del Bloque Anterior: {self.hashPrevio.hex()}')
+        print('=' * 35)
 
 
 # Clase Cadena para todo lo relacionado con la formación de estas
@@ -152,12 +159,34 @@ class Cadena:
         else:
             nuevo = cerosActuales
         return max(self.minCeros, min(self.maxCeros, nuevo)) # Sirve para asegurar que la dificultad no sea menor a la deseada ni mayor a la deseada
+
+
+    # Función para obtener estadísticas de la cadena
+    def obtenerEstadisticas(self):
+        if not self.bloques:
+            print("No hay bloques en la cadena.")
+            return
+            
+        tiempos = [bloque.segundos for bloque in self.bloques]
+        dificultades = [bloque.ceros for bloque in self.bloques]
+        
+        print(f"\n=== ESTADÍSTICAS DE LA CADENA ===")
+        print(f"Número total de bloques: {len(self.bloques)}")
+        print(f"Tiempo promedio de minado: {sum(tiempos)/len(tiempos):.2f} segundos")
+        print(f"Tiempo más rápido: {min(tiempos):.2f} segundos")
+        print(f"Tiempo más lento: {max(tiempos):.2f} segundos")
+        print(f"Dificultad actual: {dificultades[-1]} ceros")
+        print(f"Dificultad promedio: {sum(dificultades)/len(dificultades):.1f} ceros")
+        print(f"Dificultad mínima alcanzada: {min(dificultades)} ceros")
+        print(f"Dificultad máxima alcanzada: {max(dificultades)} ceros")
     
 
     # Revisa todos los bloques de la lista (cadena) y revisa que estén bien
     def verificarCadena(self):
+        print(f"\n=== VERIFICANDO CADENA DE {len(self.bloques)} BLOQUES ===")
         resultados = []
         cadenaRota = False  # si ya se detectó una corrupción antes
+        bloques_corruptos = 0
 
         for i, bloque in enumerate(self.bloques): # Itera todos los bloques y crea un contador del índice de cada uno
             mensajes = []
@@ -169,11 +198,14 @@ class Cadena:
             if hashNuevo != hashViejo:
                 mensajes.append("Hash incorrecto")
                 cadenaRota = True
+                bloques_corruptos += 1
             
             # Verificar que el hash cumpla la dificultad
             if not bloque.hashValido(hashViejo):
                 mensajes.append(f'No cumple el requisito de {bloque.ceros} ceros')
                 cadenaRota = True
+                if "Hash incorrecto" not in mensajes:
+                    bloques_corruptos += 1
 
             # Verificar enlace con bloque previo
             if i > 0:
@@ -181,50 +213,79 @@ class Cadena:
                 if bloque.hashPrevio != hashPrevioEsperado:
                     mensajes.append('Referencia al bloque previo incorrecta')
                     cadenaRota = True
+                    if not any("Hash incorrecto" in m or "No cumple" in m for m in mensajes):
+                        bloques_corruptos += 1
             elif bloque.hashPrevio != b'\x00' * 32:
                 mensajes.append('Bloque génesis con hash previo incorrecto')
                 cadenaRota = True
+                if not any("Hash incorrecto" in m or "No cumple" in m for m in mensajes):
+                    bloques_corruptos += 1
 
             # Contaminación en cascada si no tiene fallo directo
             if cadenaRota and not mensajes:
                 mensajes.append("Posiblemente comprometido por corrupción previa")
 
             if not mensajes:
-                resultados.append(f"Bloque {i}: OK")
+                resultados.append(f"Bloque {i}: ✅ OK")
             else:
-                resultados.append(f"Bloque {i}: {' y '.join(mensajes)}")
+                resultados.append(f"Bloque {i}: ❌ {' y '.join(mensajes)}")
 
+        # Mostrar resumen
+        if bloques_corruptos == 0:
+            print("¡La cadena está íntegra!")
+        else:
+            print(f"Se encontraron {bloques_corruptos} bloque(s) con problemas")
+        
+        print(f"Bloques verificados: {len(self.bloques)}")
+        print("Detalles:")
         return resultados
 
 
     # Simplemente da toda la información sobre un bloque en particular
     def leerBloque (self):
-        indice = int(input('\nIngrese el índice del bloque que quiere conocer (recuerde que el génesis tiene índice 0): '))
-        if not (0 <= indice < len(self.bloques)):
-            raise IndexError(f"Índice {indice} fuera de rango. La cadena tiene {len(self.bloques)} bloques.")
-        print(f'Información del bloque con índice: {indice} \n')
-        bloque = self.bloques[indice]
-        bloque.darInfo()
+        try:
+            indice = int(input('\nIngrese el índice del bloque que quiere conocer (recuerde que el génesis tiene índice 0): '))
+            if not (0 <= indice < len(self.bloques)):
+                print(f"Error: Índice {indice} fuera de rango. La cadena tiene {len(self.bloques)} bloques.")
+                return
+            print(f'Información del bloque con índice: {indice} \n')
+            bloque = self.bloques[indice]
+            bloque.darInfo()
+        except ValueError:
+            print("Error: Por favor ingrese un número válido.")
 
 
     # Sirve para borrar un bloque cualquiera (y los que le siguen) a partir de un índice
     def borrarBloque (self):
-        indice = int(input('\nIngrese el índice del bloque que quiere eliminar (recuerde que el génesis tiene índice 0): '))
-        if not (0 <= indice < len(self.bloques)):
-            raise IndexError(f"Índice {indice} fuera de rango. La cadena tiene {len(self.bloques)} bloques.")
-        self.bloques = self.bloques[:indice]
-        print('Bloque eliminado satisfactoriamente')
+        try:
+            indice = int(input('\nIngrese el índice del bloque que quiere eliminar (recuerde que el génesis tiene índice 0): '))
+            if indice == 0:
+                print("Error: No se puede eliminar el bloque génesis.")
+                return
+            if not (0 <= indice < len(self.bloques)):
+                print(f"Error: Índice {indice} fuera de rango. La cadena tiene {len(self.bloques)} bloques.")
+                return
+            self.bloques = self.bloques[:indice]
+            print(f'Bloque {indice} y todos los siguientes eliminados satisfactoriamente')
+        except ValueError:
+            print("Error: Por favor ingrese un número válido.")
 
 
     # Con esta se puede modificar un bloque, cambiando su nonce y timestamp para alterarlo
     def alterarBloque(self):
-        indice = int(input('\nIngrese el índice del bloque que quiere alterar (recuerde que el génesis tiene índice 0): '))
-        if not (0 <= indice < len(self.bloques)):
-            raise IndexError(f"Índice {indice} fuera de rango. La cadena tiene {len(self.bloques)} bloques.")
-        
-        bloque = self.bloques[indice]
-        bloque.nonce += 1
-        bloque.tiempo = datetime.datetime.now()
+        try:
+            indice = int(input('\nIngrese el índice del bloque que quiere alterar (recuerde que el génesis tiene índice 0): '))
+            if not (0 <= indice < len(self.bloques)):
+                print(f"Error: Índice {indice} fuera de rango. La cadena tiene {len(self.bloques)} bloques.")
+                return
+            
+            bloque = self.bloques[indice]
+            print(f"Bloque {indice} alterado. Hash anterior: {bloque.hashEnHex()[:16]}...")
+            bloque.nonce += 1
+            bloque.tiempo = datetime.datetime.now()
+            print(f"Nuevo nonce: {bloque.nonce}, nuevo timestamp: {bloque.tiempo.isoformat()}")
+        except ValueError:
+            print("Error: Por favor ingrese un número válido.")
 
 
     # La puse para llamarla en alterar bloque, pero no es necesario
@@ -280,14 +341,30 @@ def main():
                 cadena.alterarBloque()
 
         elif respuesta == 7:
-            cantidad = int(input('¿Cuántos bloques deseas crear? '))
-            if cadena is None:
-                cadena = Cadena(dificultadInicial=20)
-            
-            for _ in range(cantidad):
-                cadena.agregar_bloque()
+            try:
+                cantidad = int(input('¿Cuántos bloques deseas crear? '))
+                if cantidad <= 0:
+                    print("Error: La cantidad debe ser un número positivo.")
+                    continue
+                if cadena is None:
+                    cadena = Cadena(dificultadInicial=20)
+                
+                print(f"Creando {cantidad} bloques...")
+                for i in range(cantidad):
+                    print(f"Creando bloque {i+1}/{cantidad}")
+                    cadena.agregar_bloque()
+                    
+            except ValueError:
+                print("Error: Por favor ingrese un número válido.")
 
         elif respuesta == 8:
+            # Ver estadísticas
+            if cadena is None:
+                print('Primero crea la cadena (opción 1)')
+            else:
+                cadena.obtenerEstadisticas()
+
+        elif respuesta == 9:
             break
 
         else:
