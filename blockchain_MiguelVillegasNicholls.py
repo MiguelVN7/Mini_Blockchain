@@ -3,6 +3,8 @@ import hashlib
 import time
 import os
 
+# Código con las adiciones para el parcial 2
+
 # Función para limpiar la pantalla
 def limpiar_pantalla():
     os.system('clear' if os.name == 'posix' else 'cls')
