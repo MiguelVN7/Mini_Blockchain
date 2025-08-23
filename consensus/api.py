@@ -86,8 +86,8 @@ async def register_node(req: RegisterReq):
         
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Error registrando nodo: {str(e)}"
+            status_code=400,
+            detail=f"Error de validación de firma: {str(e)}"
         )
 
 
@@ -108,7 +108,7 @@ async def freeze_tokens(req: FreezeReq):
         
         if not success:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=400,
                 detail="Error congelando tokens: nodo no registrado o firma inválida"
             )
         
@@ -119,12 +119,12 @@ async def freeze_tokens(req: FreezeReq):
         
     except ValueError as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=400,
             detail=f"Error decodificando signature: {str(e)}"
         )
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=500,
             detail=f"Error interno: {str(e)}"
         )
 
@@ -148,7 +148,7 @@ async def submit_random_seed(req: SeedReq):
         
         if not success:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
+                status_code=403,
                 detail="No autorizado: no eres el líder del turno o firma inválida"
             )
         
@@ -156,12 +156,12 @@ async def submit_random_seed(req: SeedReq):
         
     except ValueError as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=400,
             detail=f"Error decodificando signature: {str(e)}"
         )
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=500,
             detail=f"Error interno: {str(e)}"
         )
 
@@ -186,7 +186,7 @@ async def submit_vote(req: VoteReq):
         
         if not success:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=400,
                 detail="Error registrando voto: nodo no registrado, firma inválida, o no hay seed"
             )
         
@@ -194,12 +194,12 @@ async def submit_vote(req: VoteReq):
         
     except ValueError as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=400,
             detail=f"Error decodificando signature: {str(e)}"
         )
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=500,
             detail=f"Error interno: {str(e)}"
         )
 
@@ -227,7 +227,7 @@ async def get_consensus_result():
         
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=500,
             detail=f"Error calculando consenso: {str(e)}"
         )
 
@@ -253,7 +253,7 @@ async def propose_block(req: BlockProposeReq):
         
         if not success:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=400,
                 detail="Error proponiendo bloque: nodo no registrado o firma inválida"
             )
         
@@ -261,12 +261,12 @@ async def propose_block(req: BlockProposeReq):
         
     except ValueError as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=400,
             detail=f"Error decodificando signature: {str(e)}"
         )
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=500,
             detail=f"Error interno: {str(e)}"
         )
 
@@ -293,7 +293,7 @@ async def submit_block(req: BlockSubmitReq):
         
         if not success:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
+                status_code=403,
                 detail="No autorizado: no eres el líder seleccionado o no se alcanzó consenso"
             )
         
@@ -301,12 +301,12 @@ async def submit_block(req: BlockSubmitReq):
         
     except ValueError as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=400,
             detail=f"Error decodificando signature: {str(e)}"
         )
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=500,
             detail=f"Error interno: {str(e)}"
         )
 
@@ -338,7 +338,7 @@ async def report_leader(req: ReportReq):
         
         if not success:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=400,
                 detail="Error reportando líder: reporter no registrado o firma inválida"
             )
         
@@ -346,12 +346,12 @@ async def report_leader(req: ReportReq):
         
     except ValueError as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=400,
             detail=f"Error decodificando signature: {str(e)}"
         )
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=500,
             detail=f"Error interno: {str(e)}"
         )
 
