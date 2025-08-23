@@ -1,0 +1,32 @@
+{
+  "nodes": {
+    "miguel@node1.com": {
+      "nodeId": "miguel@node1.com",
+      "ip": "192.168.1.10",
+      "publicKey": "MOCK_PUBLIC_KEY_miguel@node1.com",
+      "assignedOrder": 2,
+      "active": true
+    },
+    "alice@node2.com": {
+      "nodeId": "alice@node2.com",
+      "ip": "192.168.1.20",
+      "publicKey": "MOCK_PUBLIC_KEY_alice@node2.com",
+      "assignedOrder": 1,
+      "active": true
+    },
+    "bob@node3.com": {
+      "nodeId": "bob@node3.com",
+      "ip": "192.168.1.30",
+      "publicKey": "MOCK_PUBLIC_KEY_bob@node3.com",
+      "assignedOrder": 0,
+      "active": true
+    }
+  },
+  "frozen_tokens": {},
+  "turn_state": {
+    "current_turn": 0,
+    "current_seed": null,
+    "seed_leader": null
+  },
+  "next_order": 3
+}
