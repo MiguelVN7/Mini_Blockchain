@@ -4,21 +4,91 @@
       "nodeId": "miguel@node1.com",
       "ip": "192.168.1.10",
       "publicKey": "MOCK_PUBLIC_KEY_miguel@node1.com",
-      "assignedOrder": 2,
+      "assignedOrder": 12,
       "active": true
     },
     "alice@node2.com": {
       "nodeId": "alice@node2.com",
       "ip": "192.168.1.20",
       "publicKey": "MOCK_PUBLIC_KEY_alice@node2.com",
-      "assignedOrder": 1,
+      "assignedOrder": 11,
       "active": true
     },
     "bob@node3.com": {
       "nodeId": "bob@node3.com",
       "ip": "192.168.1.30",
       "publicKey": "MOCK_PUBLIC_KEY_bob@node3.com",
+      "assignedOrder": 10,
+      "active": true
+    },
+    "miguel_node": {
+      "nodeId": "miguel_node",
+      "ip": "192.168.1.100",
+      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nversion 1.0\n-----END PGP PUBLIC KEY BLOCK-----",
+      "assignedOrder": 8,
+      "active": true
+    },
+    "alice_node": {
+      "nodeId": "alice_node",
+      "ip": "192.168.1.101",
+      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nalice_key\n-----END PGP PUBLIC KEY BLOCK-----",
+      "assignedOrder": 6,
+      "active": true
+    },
+    "bob_node": {
+      "nodeId": "bob_node",
+      "ip": "192.168.1.102",
+      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nbob_key\n-----END PGP PUBLIC KEY BLOCK-----",
+      "assignedOrder": 4,
+      "active": true
+    },
+    "demo_node": {
+      "nodeId": "demo_node",
+      "ip": "192.168.1.200",
+      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\ndemo_key_content\n-----END PGP PUBLIC KEY BLOCK-----",
+      "assignedOrder": 1,
+      "active": true
+    },
+    "miguevillegas1@gmail.com": {
+      "nodeId": "miguevillegas1@gmail.com",
+      "ip": "192.168.1.250",
+      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\nmQGNBGauqF0BDADCx...\n-----END PGP PUBLIC KEY BLOCK-----",
       "assignedOrder": 0,
+      "active": true
+    },
+    "demo@blockchain.com": {
+      "nodeId": "demo@blockchain.com",
+      "ip": "192.168.1.100",
+      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nMOCK_KEY\n-----END PGP PUBLIC KEY BLOCK-----",
+      "assignedOrder": 9,
+      "active": true
+    },
+    "demo_academic@example.com": {
+      "nodeId": "demo_academic@example.com",
+      "ip": "192.168.1.200",
+      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nDEMO_KEY\n-----END PGP PUBLIC KEY BLOCK-----",
+      "assignedOrder": 2,
+      "active": true
+    },
+    "alice_academic@example.com": {
+      "nodeId": "alice_academic@example.com",
+      "ip": "192.168.1.101",
+      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nalice_academic@example.com_KEY\n-----END PGP PUBLIC KEY BLOCK-----",
+      "assignedOrder": 7,
+      "active": true
+    },
+    "bob_academic@example.com": {
+      "nodeId": "bob_academic@example.com",
+      "ip": "192.168.1.102",
+      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nbob_academic@example.com_KEY\n-----END PGP PUBLIC KEY BLOCK-----",
+      "assignedOrder": 5,
+      "active": true
+    },
+    "charlie_academic@example.com": {
+      "nodeId": "charlie_academic@example.com",
+      "ip": "192.168.1.103",
+      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\ncharlie_academic@example.com_KEY\n-----END PGP PUBLIC KEY BLOCK-----",
+      "assignedOrder": 3,
       "active": true
     }
   },
@@ -28,5 +98,5 @@
     "current_seed": null,
     "seed_leader": null
   },
-  "next_order": 3
+  "next_order": 13
 }
