@@ -420,7 +420,7 @@ class BlockchainConsensusServer:
 
 def main():
     """Función principal del sistema integrado."""
-    print("🎓 Blockchain con Consenso Distribuido - Miguel Villegas Nicholls")
+    print("🎓 Blockchain con Consenso Distribuido")
     print("=" * 70)
     
     server = BlockchainConsensusServer()

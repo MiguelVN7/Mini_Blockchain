@@ -6,21 +6,21 @@
         "ip": "192.168.1.10",
         "publicKey": "alice_pubkey",
         "order": 0,
-        "registrationTime": 1756053224.9118211
+        "registrationTime": 1756053445.596311
       },
       "bob": {
         "nodeId": "bob",
         "ip": "192.168.1.20",
         "publicKey": "bob_pubkey",
         "order": 1,
-        "registrationTime": 1756053224.915794
+        "registrationTime": 1756053445.5993001
       },
       "charlie": {
         "nodeId": "charlie",
         "ip": "192.168.1.30",
         "publicKey": "charlie_pubkey",
         "order": 2,
-        "registrationTime": 1756053224.918571
+        "registrationTime": 1756053445.601611
       }
     },
     "ip_to_order": {
@@ -32,9 +32,9 @@
   },
   "tokens": {
     "frozen_tokens": {
-      "alice": 200,
-      "bob": 300,
-      "charlie": 150
+      "alice": 300,
+      "bob": 450,
+      "charlie": 225
     }
   },
   "turn_state": {
@@ -48,5 +48,5 @@
     }
   },
   "malicious_reports": {},
-  "timestamp": 1756053224.975984
+  "timestamp": 1756053445.6535912
 }
