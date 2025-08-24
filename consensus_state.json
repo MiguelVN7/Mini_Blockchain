@@ -1,102 +1,52 @@
 {
-  "nodes": {
-    "miguel@node1.com": {
-      "nodeId": "miguel@node1.com",
-      "ip": "192.168.1.10",
-      "publicKey": "MOCK_PUBLIC_KEY_miguel@node1.com",
-      "assignedOrder": 12,
-      "active": true
+  "registry": {
+    "nodes": {
+      "alice": {
+        "nodeId": "alice",
+        "ip": "192.168.1.10",
+        "publicKey": "alice_pubkey",
+        "order": 0,
+        "registrationTime": 1756053224.9118211
+      },
+      "bob": {
+        "nodeId": "bob",
+        "ip": "192.168.1.20",
+        "publicKey": "bob_pubkey",
+        "order": 1,
+        "registrationTime": 1756053224.915794
+      },
+      "charlie": {
+        "nodeId": "charlie",
+        "ip": "192.168.1.30",
+        "publicKey": "charlie_pubkey",
+        "order": 2,
+        "registrationTime": 1756053224.918571
+      }
     },
-    "alice@node2.com": {
-      "nodeId": "alice@node2.com",
-      "ip": "192.168.1.20",
-      "publicKey": "MOCK_PUBLIC_KEY_alice@node2.com",
-      "assignedOrder": 11,
-      "active": true
+    "ip_to_order": {
+      "192.168.1.10": 0,
+      "192.168.1.20": 1,
+      "192.168.1.30": 2
     },
-    "bob@node3.com": {
-      "nodeId": "bob@node3.com",
-      "ip": "192.168.1.30",
-      "publicKey": "MOCK_PUBLIC_KEY_bob@node3.com",
-      "assignedOrder": 10,
-      "active": true
-    },
-    "miguel_node": {
-      "nodeId": "miguel_node",
-      "ip": "192.168.1.100",
-      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nversion 1.0\n-----END PGP PUBLIC KEY BLOCK-----",
-      "assignedOrder": 8,
-      "active": true
-    },
-    "alice_node": {
-      "nodeId": "alice_node",
-      "ip": "192.168.1.101",
-      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nalice_key\n-----END PGP PUBLIC KEY BLOCK-----",
-      "assignedOrder": 6,
-      "active": true
-    },
-    "bob_node": {
-      "nodeId": "bob_node",
-      "ip": "192.168.1.102",
-      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nbob_key\n-----END PGP PUBLIC KEY BLOCK-----",
-      "assignedOrder": 4,
-      "active": true
-    },
-    "demo_node": {
-      "nodeId": "demo_node",
-      "ip": "192.168.1.200",
-      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\ndemo_key_content\n-----END PGP PUBLIC KEY BLOCK-----",
-      "assignedOrder": 1,
-      "active": true
-    },
-    "miguevillegas1@gmail.com": {
-      "nodeId": "miguevillegas1@gmail.com",
-      "ip": "192.168.1.250",
-      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\nmQGNBGauqF0BDADCx...\n-----END PGP PUBLIC KEY BLOCK-----",
-      "assignedOrder": 0,
-      "active": true
-    },
-    "demo@blockchain.com": {
-      "nodeId": "demo@blockchain.com",
-      "ip": "192.168.1.100",
-      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nMOCK_KEY\n-----END PGP PUBLIC KEY BLOCK-----",
-      "assignedOrder": 9,
-      "active": true
-    },
-    "demo_academic@example.com": {
-      "nodeId": "demo_academic@example.com",
-      "ip": "192.168.1.200",
-      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nDEMO_KEY\n-----END PGP PUBLIC KEY BLOCK-----",
-      "assignedOrder": 2,
-      "active": true
-    },
-    "alice_academic@example.com": {
-      "nodeId": "alice_academic@example.com",
-      "ip": "192.168.1.101",
-      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nalice_academic@example.com_KEY\n-----END PGP PUBLIC KEY BLOCK-----",
-      "assignedOrder": 7,
-      "active": true
-    },
-    "bob_academic@example.com": {
-      "nodeId": "bob_academic@example.com",
-      "ip": "192.168.1.102",
-      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\nbob_academic@example.com_KEY\n-----END PGP PUBLIC KEY BLOCK-----",
-      "assignedOrder": 5,
-      "active": true
-    },
-    "charlie_academic@example.com": {
-      "nodeId": "charlie_academic@example.com",
-      "ip": "192.168.1.103",
-      "publicKey": "-----BEGIN PGP PUBLIC KEY BLOCK-----\ncharlie_academic@example.com_KEY\n-----END PGP PUBLIC KEY BLOCK-----",
-      "assignedOrder": 3,
-      "active": true
+    "next_order": 3
+  },
+  "tokens": {
+    "frozen_tokens": {
+      "alice": 200,
+      "bob": 300,
+      "charlie": 150
     }
   },
-  "frozen_tokens": {},
   "turn_state": {
     "current_turn": 0,
-    "current_seed": null,
-    "seed_leader": null
+    "current_seed": 0,
+    "seed_leader": "",
+    "votes": {
+      "alice": "accept_block_123",
+      "bob": "accept_block_123",
+      "charlie": "reject_block_123"
+    }
   },
-  "next_order": 13
+  "malicious_reports": {},
+  "timestamp": 1756053224.975984
 }
