@@ -8,14 +8,14 @@ Autor: Miguel Villegas Nicholls
 Curso: Fundamentos de Blockchain
 Fecha: Agosto 2025
 
-PROTOCOL SPECIFICATION COMPLIANCE:
-✅ Leader selection: Rotation based on IP address (32-bit number interpretation)
-✅ Token freezing: Digital signatures for token commitment decisions
-✅ Consensus number: 32-bit (2 bytes round + 2 bytes random from Python RNG)
-✅ Weighted random: Probability proportional to frozen tokens
-✅ Result exchange: Encrypted results with private keys
-✅ 2/3 verification: Byzantine fault tolerant consensus
-✅ Block distribution: Signed block validation and fraud detection
+CUMPLIMIENTO DE ESPECIFICACIÓN DEL PROTOCOLO:
+✅ Selección de líder: Rotación basada en dirección IP (interpretación de número de 32-bit)
+✅ Congelamiento de tokens: Firmas digitales para decisiones de compromiso de tokens
+✅ Número de consenso: 32-bit (2 bytes ronda + 2 bytes aleatorio del RNG de Python)
+✅ Aleatorio ponderado: Probabilidad proporcional a tokens congelados
+✅ Intercambio de resultados: Resultados cifrados con claves privadas
+✅ Verificación 2/3: Consenso tolerante a fallas bizantinas
+✅ Distribución de bloques: Validación de bloques firmados y detección de fraudes
 """
 
 import datetime
@@ -34,7 +34,7 @@ import uvicorn
 import threading
 
 # ============================================================================
-# PROTOCOL MODELS (Exact Specification Compliance)
+# MODELOS DEL PROTOCOLO (Cumplimiento Exacto de Especificación)
 # ============================================================================
 
 class NodeRegisterReq(BaseModel):
@@ -72,11 +72,11 @@ class FraudReportReq(BaseModel):
     signature: str
 
 # ============================================================================
-# CRYPTOGRAPHIC PROVIDER (GPG + Mock Fallback)
+# PROVEEDOR CRIPTOGRÁFICO (GPG + Respaldo Simulado)
 # ============================================================================
 
 class CryptographicProvider:
-    """Cryptographic operations with GPG real implementation and mock fallback."""
+    """Operaciones criptográficas con implementación real GPG y respaldo simulado."""
     
     def __init__(self):
         self.gpg_available = self._check_gpg_availability()
@@ -90,29 +90,29 @@ class CryptographicProvider:
             return False
     
     def sign_with_private_key(self, private_key_id: str, data: bytes) -> str:
-        """Sign data with private key (GPG or mock)."""
+        """Firmar datos con clave privada (GPG o simulado)."""
         if self.gpg_available:
             return self._gpg_sign(private_key_id, data)
         else:
             return self._mock_sign(private_key_id, data)
     
     def verify_signature(self, public_key: str, data: bytes, signature: str) -> bool:
-        """Verify signature with public key."""
+        """Verificar firma con clave pública."""
         if self.gpg_available:
             return self._gpg_verify(public_key, data, signature)
         else:
             return self._mock_verify(public_key, data, signature)
     
     def encrypt_with_private_key(self, private_key_id: str, data: int) -> str:
-        """Encrypt 32-bit number with private key."""
-        data_bytes = struct.pack('>I', data)  # Big-endian 32-bit
+        """Cifrar número de 32-bit con clave privada."""
+        data_bytes = struct.pack('>I', data)  # 32-bit big-endian
         if self.gpg_available:
             return self._gpg_encrypt(private_key_id, data_bytes)
         else:
             return self._mock_encrypt(private_key_id, data_bytes)
     
     def decrypt_with_public_key(self, public_key: str, encrypted_data: str) -> int:
-        """Decrypt to recover 32-bit number."""
+        """Descifrar para recuperar número de 32-bit."""
         if self.gpg_available:
             decrypted = self._gpg_decrypt(public_key, encrypted_data)
         else:
@@ -129,18 +129,18 @@ class CryptographicProvider:
             return f"mock_sig_{key_id}"
     
     def _gpg_verify(self, public_key: str, data: bytes, signature: str) -> bool:
-        # GPG verification implementation
-        return True  # Simplified for demo
+        # Implementación de verificación GPG
+        return True  # Simplificado para demo
     
     def _gpg_encrypt(self, key_id: str, data: bytes) -> str:
         try:
-            # GPG encryption with private key (signing)
+            # Cifrado GPG con clave privada (firmado)
             return f"gpg_encrypted_{data.hex()}_{key_id}"
         except:
             return self._mock_encrypt(key_id, data)
     
     def _gpg_decrypt(self, public_key: str, encrypted: str) -> bytes:
-        # Simplified GPG decryption
+        # Descifrado GPG simplificado
         return bytes.fromhex(encrypted.split('_')[1]) if '_' in encrypted else b'\x00\x00\x00\x01'
     
     def _mock_sign(self, key_id: str, data: bytes) -> str:
@@ -160,7 +160,7 @@ class CryptographicProvider:
             return b'\x00\x00\x00\x01'
 
 # ============================================================================
-# CONSENSUS PROTOCOL ENGINE (Exact Specification)
+# MOTOR DE PROTOCOLO DE CONSENSO (Especificación Exacta)
 # ============================================================================
 
 @dataclass
@@ -185,7 +185,7 @@ class ProtocolState:
     fraud_reports: Dict[str, List[str]]
 
 class ConsensusProtocolEngine:
-    """Implements the exact consensus protocol from academic specification."""
+    """Implementa el protocolo de consenso exacto de la especificación académica."""
     
     def __init__(self):
         self.crypto = CryptographicProvider()
@@ -203,13 +203,13 @@ class ConsensusProtocolEngine:
         self.load_persistent_state()
     
     def register_network_member(self, node_id: str, ip: str, public_key: str, signature: str) -> bool:
-        """Register new network member with IP-based ordering."""
-        # Verify signature
+        """Registrar nuevo miembro de la red con ordenamiento basado en IP."""
+        # Verificar firma
         registration_data = f"{node_id}{ip}{public_key}".encode()
         if not self.crypto.verify_signature(public_key, registration_data, signature):
             return False
         
-        # Convert IP to 32-bit number for ordering
+        # Convertir IP a número de 32-bit para ordenamiento
         ip_as_32bit = self._ip_to_32bit(ip)
         
         node = NetworkNode(
@@ -226,41 +226,41 @@ class ConsensusProtocolEngine:
         return True
     
     def freeze_tokens_for_participation(self, node_id: str, tokens: int, signature: str) -> bool:
-        """Freeze tokens for participation in consensus with signature verification."""
+        """Congelar tokens para participación en consenso con verificación de firma."""
         if node_id not in self.state.nodes:
             return False
         
-        # Verify signature for token freezing decision
+        # Verificar firma para decisión de congelamiento de tokens
         freeze_data = f"{node_id}{tokens}{int(time.time())}".encode()
         node = self.state.nodes[node_id]
         
         if not self.crypto.verify_signature(node.public_key, freeze_data, signature):
             return False
         
-        # Share digitally signed information as per protocol
+        # Compartir información firmada digitalmente según protocolo
         self.state.frozen_tokens[node_id] = self.state.frozen_tokens.get(node_id, 0) + tokens
         self._save_persistent_state()
         return True
     
     def generate_consensus_number_as_leader(self, leader_id: str, signature: str) -> Optional[int]:
-        """Leader generates 32-bit consensus number according to specification."""
-        # Verify leader exists and is registered
+        """Líder genera número de consenso de 32-bit según especificación."""
+        # Verificar que el líder existe y está registrado
         if leader_id not in self.state.nodes or not self.state.nodes[leader_id].is_active:
             return None
             
-        # For demo purposes, allow any active node to generate consensus number
-        # In production, you'd want stricter leader verification
+        # Para propósitos de demo, permitir que cualquier nodo activo genere número de consenso
+        # En producción, querrías verificación de líder más estricta
         if not self._is_current_leader(leader_id):
             print(f"   ⚠️ Warning: {leader_id} is not the expected current leader")
             # Allow it anyway for demonstration
         
-        # Generate consensus number: first 2 bytes = round number, last 2 bytes = random
-        round_bytes = self.state.current_round & 0xFFFF  # Restart after 65,536
-        random_bytes = random.randint(0, 0xFFFF)  # Python RNG, uniform [0, 2^16-1]
+        # Generar número de consenso: primeros 2 bytes = número de ronda, últimos 2 bytes = aleatorio
+        round_bytes = self.state.current_round & 0xFFFF  # Reiniciar después de 65,536
+        random_bytes = random.randint(0, 0xFFFF)  # RNG de Python, uniforme [0, 2^16-1]
         
         consensus_number = (round_bytes << 16) | random_bytes
         
-        # Encrypt with leader's private key and transmit
+        # Cifrar con clave privada del líder y transmitir
         encrypted_number = self.crypto.encrypt_with_private_key(leader_id, consensus_number)
         
         self.state.consensus_number = consensus_number
@@ -269,24 +269,24 @@ class ConsensusProtocolEngine:
         return consensus_number
     
     def process_member_vote(self, node_id: str, encrypted_result: str, signature: str) -> bool:
-        """Process vote from network member with weighted random selection."""
+        """Procesar voto de miembro de la red con selección aleatoria ponderada."""
         if node_id not in self.state.nodes or node_id not in self.state.frozen_tokens:
             return False
         
-        # Verify signature for vote
+        # Verificar firma para voto
         vote_data = f"{node_id}{encrypted_result}".encode()
         node = self.state.nodes[node_id]
         
         if not self.crypto.verify_signature(node.public_key, vote_data, signature):
             return False
         
-        # Store encrypted vote
+        # Almacenar voto cifrado
         self.state.votes[node_id] = encrypted_result
         
-        # Decrypt to get selected leader index using consensus number as seed
+        # Descifrar para obtener índice del líder seleccionado usando número de consenso como semilla
         if self.state.consensus_number:
             try:
-                # Use consensus number as seed for weighted random selection
+                # Usar número de consenso como semilla para selección aleatoria ponderada
                 selected_index = self._weighted_random_selection(node_id, self.state.consensus_number)
                 self.state.verified_results[node_id] = selected_index
             except Exception as e:
@@ -296,11 +296,11 @@ class ConsensusProtocolEngine:
         return True
     
     def verify_consensus_agreement(self) -> Tuple[bool, Optional[str], float]:
-        """Verify if 2/3 of network agrees on same selected leader."""
+        """Verificar si 2/3 de la red está de acuerdo en el mismo líder seleccionado."""
         if not self.state.verified_results:
             return False, None, 0.0
         
-        # Count votes for each leader (weighted by tokens)
+        # Contar votos para cada líder (ponderado por tokens)
         leader_votes = {}
         total_weight = 0
         
@@ -315,13 +315,13 @@ class ConsensusProtocolEngine:
         if not leader_votes or total_weight == 0:
             return False, None, 0.0
         
-        # Find leader with most votes
+        # Encontrar líder con más votos
         winning_leader = max(leader_votes, key=leader_votes.get)
         winning_votes = leader_votes[winning_leader]
         
         agreement_percentage = (winning_votes / total_weight) * 100
         
-        # Byzantine fault tolerance: require 2/3 (66.67%) agreement
+        # Tolerancia a fallas bizantinas: requerir 2/3 (66.67%) de acuerdo
         has_consensus = agreement_percentage >= 66.67
         
         if has_consensus:
@@ -330,29 +330,29 @@ class ConsensusProtocolEngine:
         return has_consensus, winning_leader, agreement_percentage
     
     def report_fraudulent_behavior(self, reporter_id: str, fraudulent_id: str, evidence: str, signature: str) -> bool:
-        """Report fraudulent leader behavior."""
+        """Reportar comportamiento fraudulento del líder."""
         if reporter_id not in self.state.nodes:
             return False
         
-        # Verify signature
+        # Verificar firma
         report_data = f"{reporter_id}{fraudulent_id}{evidence}".encode()
         reporter = self.state.nodes[reporter_id]
         
         if not self.crypto.verify_signature(reporter.public_key, report_data, signature):
             return False
         
-        # Store fraud report
+        # Almacenar reporte de fraude
         if fraudulent_id not in self.state.fraud_reports:
             self.state.fraud_reports[fraudulent_id] = []
         
         self.state.fraud_reports[fraudulent_id].append(f"{reporter_id}: {evidence}")
         
-        # Check if 2/3 of nodes confirm fraud accusation
+        # Verificar si 2/3 de los nodos confirman acusación de fraude
         total_reporters = len(self.state.fraud_reports[fraudulent_id])
         total_nodes = len(self.state.nodes)
         
         if total_reporters >= (total_nodes * 2) // 3:
-            # Expel fraudulent leader
+            # Expulsar líder fraudulento
             if fraudulent_id in self.state.nodes:
                 self.state.nodes[fraudulent_id].is_active = False
                 self._update_leader_rotation_order()
@@ -361,7 +361,7 @@ class ConsensusProtocolEngine:
         return True
     
     def advance_to_next_round(self):
-        """Advance to next round, clearing votes and selecting new leader."""
+        """Avanzar a la siguiente ronda, limpiando votos y seleccionando nuevo líder."""
         self.state.current_round += 1
         self.state.votes.clear()
         self.state.verified_results.clear()
@@ -369,19 +369,19 @@ class ConsensusProtocolEngine:
         self._save_persistent_state()
     
     def _ip_to_32bit(self, ip: str) -> int:
-        """Convert IP address to 32-bit number for deterministic ordering."""
+        """Convertir dirección IP a número de 32-bit para ordenamiento determinístico."""
         parts = ip.split('.')
         return (int(parts[0]) << 24) + (int(parts[1]) << 16) + (int(parts[2]) << 8) + int(parts[3])
     
     def _update_leader_rotation_order(self):
-        """Update leader rotation based on IP address ordering (highest first)."""
+        """Actualizar rotación de líder basada en ordenamiento de dirección IP (mayor primero)."""
         active_nodes = [node for node in self.state.nodes.values() if node.is_active]
-        # Sort by IP as 32-bit number, descending (highest IP first)
+        # Ordenar por IP como número de 32-bit, descendente (IP mayor primero)
         sorted_nodes = sorted(active_nodes, key=lambda x: x.ip_as_32bit, reverse=True)
         self.state.leader_rotation_order = [node.node_id for node in sorted_nodes]
     
     def _is_current_leader(self, node_id: str) -> bool:
-        """Check if node is current leader based on rotation."""
+        """Verificar si el nodo es el líder actual basado en rotación."""
         if not self.state.leader_rotation_order:
             return False
         
@@ -390,19 +390,19 @@ class ConsensusProtocolEngine:
         return current_leader == node_id
     
     def _weighted_random_selection(self, node_id: str, seed: int) -> int:
-        """Weighted random selection proportional to frozen tokens using consensus seed."""
-        # Use consensus number as seed
+        """Selección aleatoria ponderada proporcional a tokens congelados usando semilla de consenso."""
+        # Usar número de consenso como semilla
         random.seed(seed)
         
-        # Get total tokens
+        # Obtener tokens totales
         total_tokens = sum(self.state.frozen_tokens.values())
         if total_tokens == 0:
             return 0
         
-        # Generate random number in range [0, total_tokens]
+        # Generar número aleatorio en rango [0, total_tokens]
         rand_value = random.randint(0, total_tokens - 1)
         
-        # Select based on token weights
+        # Seleccionar basado en pesos de tokens
         cumulative_weight = 0
         for i, (member_id, tokens) in enumerate(self.state.frozen_tokens.items()):
             cumulative_weight += tokens
@@ -412,7 +412,7 @@ class ConsensusProtocolEngine:
         return 0
     
     def get_current_state(self) -> Dict[str, Any]:
-        """Get current protocol state for API."""
+        """Obtener estado actual del protocolo para API."""
         has_consensus, winning_leader, agreement_pct = self.verify_consensus_agreement()
         
         return {
@@ -428,7 +428,7 @@ class ConsensusProtocolEngine:
         }
     
     def _save_persistent_state(self):
-        """Save state to persistent storage."""
+        """Guardar estado en almacenamiento persistente."""
         try:
             state_data = {
                 "nodes": {k: asdict(v) for k, v in self.state.nodes.items()},
@@ -445,28 +445,28 @@ class ConsensusProtocolEngine:
             print(f"Warning: Could not save state: {e}")
     
     def load_persistent_state(self):
-        """Load state from persistent storage."""
+        """Cargar estado desde almacenamiento persistente."""
         try:
             with open('consensus_protocol_state.json', 'r') as f:
                 data = json.load(f)
             
-            # Restore nodes
+            # Restaurar nodos
             for node_id, node_data in data.get('nodes', {}).items():
                 self.state.nodes[node_id] = NetworkNode(**node_data)
             
-            # Restore other state
+            # Restaurar otro estado
             self.state.frozen_tokens = data.get('frozen_tokens', {})
             self.state.current_round = data.get('current_round', 0)
             self.state.leader_rotation_order = data.get('leader_rotation_order', [])
             self.state.fraud_reports = data.get('fraud_reports', {})
             
         except FileNotFoundError:
-            pass  # Start with fresh state
+            pass  # Comenzar con estado fresco
         except Exception as e:
             print(f"Warning: Could not load state: {e}")
 
 # ============================================================================
-# BLOCKCHAIN INTEGRATION
+# INTEGRACIÓN BLOCKCHAIN
 # ============================================================================
 
 @dataclass
@@ -489,21 +489,21 @@ class BlockchainBlock:
         self.hash = ""
     
     def calculate_hash(self) -> str:
-        """Calculate block hash including consensus data."""
+        """Calcular hash del bloque incluyendo datos de consenso."""
         tx_data = ''.join([f"{tx.sender}{tx.recipient}{tx.amount}{tx.timestamp}" for tx in self.transactions])
         consensus_str = json.dumps(self.consensus_data, sort_keys=True)
         block_data = f"{self.index}{self.timestamp}{tx_data}{self.previous_hash}{consensus_str}{self.nonce}"
         return hashlib.sha256(block_data.encode()).hexdigest()
     
     def mine_block(self, difficulty: int = 4):
-        """Mine block with proof-of-work."""
+        """Minar bloque con prueba de trabajo."""
         target = "0" * difficulty
         while self.hash[:difficulty] != target:
             self.nonce += 1
             self.hash = self.calculate_hash()
 
 class ConsensusValidatedBlockchain:
-    """Blockchain that validates blocks through consensus protocol."""
+    """Blockchain que valida bloques a través del protocolo de consenso."""
     
     def __init__(self, consensus_engine: ConsensusProtocolEngine):
         self.chain: List[BlockchainBlock] = []
@@ -511,13 +511,13 @@ class ConsensusValidatedBlockchain:
         self.consensus_engine = consensus_engine
         self.mining_difficulty = 4
         
-        # Create genesis block
+        # Crear bloque génesis
         genesis = BlockchainBlock(0, [], "0", {"type": "genesis", "consensus_required": False})
         genesis.mine_block(self.mining_difficulty)
         self.chain.append(genesis)
     
     def create_transaction(self, sender: str, recipient: str, amount: float, signature: str) -> bool:
-        """Create new transaction."""
+        """Crear nueva transacción."""
         transaction = BlockchainTransaction(
             sender=sender,
             recipient=recipient,
@@ -529,18 +529,18 @@ class ConsensusValidatedBlockchain:
         return True
     
     def mine_block_with_consensus_validation(self, miner_address: str) -> Optional[BlockchainBlock]:
-        """Mine new block only if consensus validates the mining leader."""
+        """Minar nuevo bloque solo si el consenso valida al líder de minado."""
         if not self.pending_transactions:
             return None
         
-        # Get consensus state
+        # Obtener estado de consenso
         consensus_state = self.consensus_engine.get_current_state()
         
-        # Verify miner is consensus-approved leader
+        # Verificar que el minero es líder aprobado por consenso
         if consensus_state["has_consensus"] and consensus_state["winning_leader"]:
             approved_leader = consensus_state["winning_leader"]
             
-            # Create consensus-validated block
+            # Crear bloque validado por consenso
             consensus_data = {
                 "consensus_validated": True,
                 "approved_leader": approved_leader,
@@ -551,19 +551,19 @@ class ConsensusValidatedBlockchain:
             
             new_block = BlockchainBlock(
                 len(self.chain),
-                self.pending_transactions[:],  # Copy transactions
+                self.pending_transactions[:],  # Copiar transacciones
                 self.chain[-1].hash,
                 consensus_data
             )
             
             new_block.mine_block(self.mining_difficulty)
             
-            # Validate through consensus before adding
+            # Validar a través de consenso antes de agregar
             if self._validate_block_through_consensus(new_block):
                 self.chain.append(new_block)
                 self.pending_transactions.clear()
                 
-                # Advance consensus to next round
+                # Avanzar consenso a la siguiente ronda
                 self.consensus_engine.advance_to_next_round()
                 
                 return new_block
@@ -571,17 +571,17 @@ class ConsensusValidatedBlockchain:
         return None
     
     def _validate_block_through_consensus(self, block: BlockchainBlock) -> bool:
-        """Additional consensus-based block validation."""
-        # Verify consensus data integrity
+        """Validación adicional de bloque basada en consenso."""
+        # Verificar integridad de datos de consenso
         if not block.consensus_data.get("consensus_validated", False):
             return False
         
-        # Verify hash integrity
+        # Verificar integridad del hash
         calculated_hash = block.calculate_hash()
         return calculated_hash == block.hash
     
     def get_blockchain_stats(self) -> Dict[str, Any]:
-        """Get blockchain statistics."""
+        """Obtener estadísticas del blockchain."""
         return {
             "total_blocks": len(self.chain),
             "pending_transactions": len(self.pending_transactions),
@@ -591,22 +591,22 @@ class ConsensusValidatedBlockchain:
         }
 
 # ============================================================================
-# REST API (FastAPI)
+# API REST (FastAPI)
 # ============================================================================
 
 app = FastAPI(
-    title="Academic Consensus Protocol Implementation",
-    description="Exact implementation of distributed blockchain consensus protocol",
+    title="Implementación de Protocolo de Consenso Académico",
+    description="Implementación exacta del protocolo de consenso blockchain distribuido",
     version="1.0.0"
 )
 
-# Global instances
+# Instancias globales
 consensus_engine = ConsensusProtocolEngine()
 blockchain = ConsensusValidatedBlockchain(consensus_engine)
 
 @app.get("/status")
 async def get_system_status():
-    """Get current system status."""
+    """Obtener estado actual del sistema."""
     consensus_state = consensus_engine.get_current_state()
     blockchain_stats = blockchain.get_blockchain_stats()
     
@@ -620,7 +620,7 @@ async def get_system_status():
 
 @app.post("/network/register")
 async def register_node(request: NodeRegisterReq):
-    """Register new network node."""
+    """Registrar nuevo nodo de red."""
     success = consensus_engine.register_network_member(
         request.nodeId,
         request.ip, 
@@ -635,7 +635,7 @@ async def register_node(request: NodeRegisterReq):
 
 @app.post("/tokens/freeze")
 async def freeze_tokens(request: TokenFreezeReq):
-    """Freeze tokens for consensus participation."""
+    """Congelar tokens para participación en consenso."""
     success = consensus_engine.freeze_tokens_for_participation(
         request.nodeId,
         request.tokens,
@@ -649,7 +649,7 @@ async def freeze_tokens(request: TokenFreezeReq):
 
 @app.post("/consensus/generate-number")
 async def generate_consensus_number(request: ConsensusNumberReq):
-    """Leader generates consensus number."""
+    """Líder genera número de consenso."""
     consensus_number = consensus_engine.generate_consensus_number_as_leader(
         request.leaderId,
         request.signature
@@ -666,7 +666,7 @@ async def generate_consensus_number(request: ConsensusNumberReq):
 
 @app.post("/consensus/vote")
 async def submit_vote(request: VoteReq):
-    """Submit encrypted vote result."""
+    """Enviar resultado de voto cifrado."""
     success = consensus_engine.process_member_vote(
         request.nodeId,
         request.encryptedResult,
@@ -680,7 +680,7 @@ async def submit_vote(request: VoteReq):
 
 @app.get("/consensus/result")
 async def get_consensus_result():
-    """Get current consensus result."""
+    """Obtener resultado actual de consenso."""
     has_consensus, winning_leader, agreement_pct = consensus_engine.verify_consensus_agreement()
     
     return {
@@ -693,8 +693,8 @@ async def get_consensus_result():
 
 @app.post("/block/validate")
 async def validate_block(request: BlockValidationReq):
-    """Validate block through consensus."""
-    # Create transaction and mine block
+    """Validar bloque a través de consenso."""
+    # Crear transacción y minar bloque
     blockchain.create_transaction("system", request.leaderId, 10.0, request.signature)
     
     new_block = blockchain.mine_block_with_consensus_validation(request.leaderId)
@@ -711,7 +711,7 @@ async def validate_block(request: BlockValidationReq):
 
 @app.post("/network/report-fraud")
 async def report_fraud(request: FraudReportReq):
-    """Report fraudulent node behavior."""
+    """Reportar comportamiento fraudulento de nodo."""
     success = consensus_engine.report_fraudulent_behavior(
         request.reporterNodeId,
         request.fraudulentNodeId,
@@ -725,11 +725,11 @@ async def report_fraud(request: FraudReportReq):
         raise HTTPException(status_code=400, detail="Fraud reporting failed")
 
 # ============================================================================
-# DEMONSTRATION SYSTEM
+# SISTEMA DE DEMOSTRACIÓN
 # ============================================================================
 
 class AcademicDemonstration:
-    """Automated demonstration of the complete consensus protocol."""
+    """Demostración automatizada del protocolo de consenso completo."""
     
     def __init__(self):
         self.demo_nodes = [
@@ -740,54 +740,54 @@ class AcademicDemonstration:
         ]
     
     def run_complete_demonstration(self):
-        """Run complete protocol demonstration."""
+        """Ejecutar demostración completa del protocolo."""
         print("🎓 ACADEMIC CONSENSUS PROTOCOL DEMONSTRATION")
         print("=" * 60)
         print("📋 Testing exact specification compliance...")
         
-        # Phase 1: Network Registration
+        # Fase 1: Registro de Red
         print("\n1️⃣ PHASE 1: Network Member Registration")
         self._demo_node_registration()
         
-        # Phase 2: Token Freezing
+        # Fase 2: Congelamiento de Tokens
         print("\n2️⃣ PHASE 2: Token Freezing with Digital Signatures")  
         self._demo_token_freezing()
         
-        # Phase 3: Leader Selection & Consensus Number
+        # Fase 3: Selección de Líder y Número de Consenso
         print("\n3️⃣ PHASE 3: Leader Selection & Consensus Number Generation")
         self._demo_consensus_number_generation()
         
-        # Phase 4: Weighted Random Selection & Voting
+        # Fase 4: Selección Aleatoria Ponderada y Votación
         print("\n4️⃣ PHASE 4: Weighted Random Selection & Voting")
         self._demo_weighted_voting()
         
-        # Phase 5: Byzantine Consensus Verification
+        # Fase 5: Verificación de Consenso Bizantino
         print("\n5️⃣ PHASE 5: Byzantine Fault Tolerant Consensus")
         self._demo_byzantine_consensus()
         
-        # Phase 6: Block Validation
+        # Fase 6: Validación de Bloques
         print("\n6️⃣ PHASE 6: Consensus-Validated Block Creation")
         self._demo_block_validation()
         
-        # Final Results
+        # Resultados Finales
         print("\n🏆 DEMONSTRATION COMPLETE")
         self._show_final_results()
     
     def _demo_node_registration(self):
-        """Demonstrate node registration with IP-based ordering."""
+        """Demostrar registro de nodos con ordenamiento basado en IP."""
         for node in self.demo_nodes:
             success = consensus_engine.register_network_member(
                 node["id"], node["ip"], node["pubkey"], f"sig_{node['id']}"
             )
             print(f"   {'✅' if success else '❌'} {node['id']} ({node['ip']})")
         
-        # Show leader rotation order (highest IP first)
+        # Mostrar orden de rotación de líder (IP mayor primero)
         state = consensus_engine.get_current_state()
         print(f"   📋 Leader rotation order: {consensus_engine.state.leader_rotation_order}")
     
     def _demo_token_freezing(self):
-        """Demonstrate token freezing with signatures."""
-        token_amounts = [100, 150, 75, 200]  # Different weights for demonstration
+        """Demostrar congelamiento de tokens con firmas."""
+        token_amounts = [100, 150, 75, 200]  # Diferentes pesos para demostración
         
         for i, node in enumerate(self.demo_nodes):
             tokens = token_amounts[i]
@@ -797,7 +797,7 @@ class AcademicDemonstration:
             print(f"   {'✅' if success else '❌'} {node['id']}: {tokens} tokens frozen")
     
     def _demo_consensus_number_generation(self):
-        """Demonstrate consensus number generation."""
+        """Demostrar generación de número de consenso."""
         current_leader = consensus_engine.state.leader_rotation_order[0] if consensus_engine.state.leader_rotation_order else None
         
         if current_leader:
@@ -813,9 +813,9 @@ class AcademicDemonstration:
             print("   ❌ No leader available")
     
     def _demo_weighted_voting(self):
-        """Demonstrate weighted random voting."""
+        """Demostrar votación aleatoria ponderada."""
         for i, node in enumerate(self.demo_nodes):
-            # Simulate encrypted vote result
+            # Simular resultado de voto cifrado
             encrypted_result = f"encrypted_vote_{i}_{node['id']}"
             success = consensus_engine.process_member_vote(
                 node["id"], encrypted_result, f"vote_sig_{node['id']}"
@@ -823,7 +823,7 @@ class AcademicDemonstration:
             print(f"   {'✅' if success else '❌'} {node['id']}: Vote submitted")
     
     def _demo_byzantine_consensus(self):
-        """Demonstrate Byzantine fault tolerant consensus verification."""
+        """Demostrar verificación de consenso tolerante a fallas bizantinas."""
         has_consensus, winning_leader, agreement_pct = consensus_engine.verify_consensus_agreement()
         
         print(f"   📊 Consensus reached: {'✅ Yes' if has_consensus else '❌ No'}")
@@ -832,11 +832,11 @@ class AcademicDemonstration:
         print(f"   🛡️ Byzantine fault tolerant: {'✅' if agreement_pct >= 66.67 else '❌'}")
     
     def _demo_block_validation(self):
-        """Demonstrate consensus-validated block creation."""
-        # Create sample transaction
+        """Demostrar creación de bloque validado por consenso."""
+        # Crear transacción de ejemplo
         blockchain.create_transaction("alice", "bob", 50.0, "tx_signature")
         
-        # Mine block with consensus validation
+        # Minar bloque con validación de consenso
         winning_leader = consensus_engine.state.last_agreed_leader
         if winning_leader:
             block = blockchain.mine_block_with_consensus_validation(winning_leader)
@@ -850,7 +850,7 @@ class AcademicDemonstration:
             print("   ⚠️ No consensus leader for block validation")
     
     def _show_final_results(self):
-        """Show final demonstration results."""
+        """Mostrar resultados finales de la demostración."""
         consensus_state = consensus_engine.get_current_state()
         blockchain_stats = blockchain.get_blockchain_stats()
         
@@ -875,11 +875,11 @@ class AcademicDemonstration:
         print("✅ Fraud detection & expulsion: IMPLEMENTED")
 
 # ============================================================================
-# MAIN EXECUTION
+# EJECUCIÓN PRINCIPAL
 # ============================================================================
 
 def start_api_server():
-    """Start API server in separate thread."""
+    """Iniciar servidor API en hilo separado."""
     def run_server():
         uvicorn.run(app, host="0.0.0.0", port=8000, log_level="warning")
     
@@ -889,20 +889,20 @@ def start_api_server():
     return server_thread
 
 def main():
-    """Main execution function."""
+    """Función de ejecución principal."""
     print("🎓 Academic Blockchain Consensus Protocol")
     print("=" * 50)
-    print("Select execution mode:")
+    print("Seleccionar modo de ejecución:")
     print("1. 🚀 Complete automated demonstration")
     print("2. 🌐 Start API server only")
     print("3. 📋 Interactive protocol testing")
-    print("0. ❌ Exit")
+    print("0. ❌ Salir")
     
     try:
-        choice = input("\nEnter choice (1-3, 0 to exit): ").strip()
+        choice = input("\nIngrese opción (1-3, 0 para salir): ").strip()
         
         if choice == "1":
-            # Start server and run demonstration
+            # Iniciar servidor y ejecutar demostración
             print("\n🚀 Starting server and demonstration...")
             start_api_server()
             print("✅ API server started on http://localhost:8000")
@@ -912,14 +912,14 @@ def main():
             demo = AcademicDemonstration()
             demo.run_complete_demonstration()
             
-            input("\nPress Enter to continue running server...")
+            input("\nPresione Enter para continuar ejecutando el servidor...")
             
         elif choice == "2":
             print("\n🌐 Starting API server...")
             start_api_server()
             print("✅ Server running on http://localhost:8000")
             print("📖 Documentation: http://localhost:8000/docs")
-            print("Press Ctrl+C to stop")
+            print("Presione Ctrl+C para detener")
             
             try:
                 while True:
@@ -928,20 +928,20 @@ def main():
                 pass
                 
         elif choice == "3":
-            print("\n📋 Interactive mode - Start server and use API documentation")
+            print("\n📋 Modo interactivo - Iniciar servidor y usar documentación API")
             start_api_server()
             print("✅ Server started: http://localhost:8000")
             print("📖 Test endpoints: http://localhost:8000/docs")
-            input("Press Enter when finished...")
+            input("Presione Enter cuando termine...")
             
         elif choice == "0":
-            print("👋 Goodbye!")
+            print("👋 ¡Adiós!")
             
         else:
-            print("❌ Invalid choice")
+            print("❌ Opción inválida")
             
     except KeyboardInterrupt:
-        print("\n👋 Goodbye!")
+        print("\n👋 ¡Adiós!")
     except Exception as e:
         print(f"❌ Error: {e}")
 

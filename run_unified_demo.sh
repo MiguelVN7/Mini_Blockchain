@@ -1,52 +1,52 @@
 #!/bin/bash
 
-# Academic Blockchain Consensus - Unified Demo Launcher
-# =====================================================
-# Quick launcher for the unified consensus protocol implementation
-# Author: Miguel Villegas Nicholls (Optimized)
+# Consenso Blockchain Académico - Lanzador de Demo Unificado
+# ===========================================================
+# Lanzador rápido para la implementación del protocolo de consenso unificado
+# Autor: Miguel Villegas Nicholls (Optimizado)
 
-echo "🎓 Academic Blockchain Consensus Protocol - Unified Implementation"
-echo "=================================================================="
+echo "🎓 Protocolo de Consenso Blockchain Académico - Implementación Unificada"
+echo "========================================================================"
 echo ""
-echo "🚀 Launching unified consensus demonstration..."
+echo "🚀 Iniciando demostración de consenso unificado..."
 echo ""
 
-# Check if Python 3 is available
+# Verificar si Python 3 está disponible
 if command -v python3 &> /dev/null; then
     PYTHON_CMD="python3"
 elif command -v python &> /dev/null; then
     PYTHON_CMD="python"
 else
-    echo "❌ Error: Python 3 is required but not found"
-    echo "Please install Python 3.8+ and try again"
+    echo "❌ Error: Se requiere Python 3 pero no se encontró"
+    echo "Por favor instale Python 3.8+ e intente de nuevo"
     exit 1
 fi
 
-# Check if required packages are installed
-echo "🔍 Checking dependencies..."
+# Verificar si los paquetes requeridos están instalados
+echo "🔍 Verificando dependencias..."
 $PYTHON_CMD -c "import fastapi, uvicorn, pydantic" 2>/dev/null
 if [ $? -ne 0 ]; then
-    echo "📦 Installing required dependencies..."
+    echo "📦 Instalando dependencias requeridas..."
     $PYTHON_CMD -m pip install fastapi uvicorn pydantic requests
     if [ $? -ne 0 ]; then
-        echo "❌ Failed to install dependencies"
-        echo "Please run manually: pip install fastapi uvicorn pydantic requests"
+        echo "❌ Falló la instalación de dependencias"
+        echo "Por favor ejecute manualmente: pip install fastapi uvicorn pydantic requests"
         exit 1
     fi
 fi
 
-echo "✅ Dependencies OK"
+echo "✅ Dependencias OK"
 echo ""
 
-# Launch the unified implementation
-echo "🚀 Starting unified consensus protocol..."
-echo "   📁 File: blockchain_consensus_unified.py"
-echo "   🌐 API will be available at: http://localhost:8000"
-echo "   📖 Documentation at: http://localhost:8000/docs"
+# Lanzar la implementación unificada
+echo "🚀 Iniciando protocolo de consenso unificado..."
+echo "   📁 Archivo: blockchain_consensus_unified.py"
+echo "   🌐 API estará disponible en: http://localhost:8000"
+echo "   📖 Documentación en: http://localhost:8000/docs"
 echo ""
 
 $PYTHON_CMD blockchain_consensus_unified.py
 
 echo ""
-echo "👋 Unified consensus demonstration completed!"
-echo "📄 Check generated reports for detailed results"
+echo "👋 ¡Demostración de consenso unificado completada!"
+echo "📄 Revisar reportes generados para resultados detallados"
