@@ -152,3 +152,7 @@ Temporary Items
 
 # Consensus state files (these can be regenerated)
 consensus_state.json
+.venv/
+__pycache__/
+*.pyc
+*.json
