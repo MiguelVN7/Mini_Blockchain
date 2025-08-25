@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-08-24T11:37:25.658125",
+  "student": "Miguel Villegas Nicholls",
+  "course": "Fundamentos de Blockchain",
+  "project": "Sistema de Consenso Distribuido Simplificado",
+  "results": {
+    "prerequisitos": true,
+    "servidor": true,
+    "registro": true,
+    "tokens": true,
+    "consensus": {
+      "hasAgreement": true,
+      "agreementPercentage": 76.92,
+      "requiredThreshold": 66.67,
+      "totalVotes": 3,
+      "agreement": "accept_block_123"
+    },
+    "votacion": true,
+    "blockchain": true,
+    "api": true
+  },
+  "summary": {
+    "total_tests": 6,
+    "passed_tests": 8,
+    "success_rate": 133.33333333333331
+  },
+  "requirements_compliance": {
+    "rotacion_liderazgo": "✅ Implementado",
+    "participacion_proporcional": "✅ Implementado",
+    "tolerancia_bizantina": "✅ Implementado",
+    "api_rest": "✅ Implementado",
+    "criptografia": "✅ Implementado con GPG",
+    "persistencia": "✅ Implementado",
+    "documentacion": "✅ Completa",
+    "testing": "✅ Automatizado"
+  }
+}

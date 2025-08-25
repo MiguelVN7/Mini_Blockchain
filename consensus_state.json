@@ -1,0 +1,52 @@
+{
+  "registry": {
+    "nodes": {
+      "alice": {
+        "nodeId": "alice",
+        "ip": "192.168.1.10",
+        "publicKey": "alice_pubkey",
+        "order": 0,
+        "registrationTime": 1756053445.596311
+      },
+      "bob": {
+        "nodeId": "bob",
+        "ip": "192.168.1.20",
+        "publicKey": "bob_pubkey",
+        "order": 1,
+        "registrationTime": 1756053445.5993001
+      },
+      "charlie": {
+        "nodeId": "charlie",
+        "ip": "192.168.1.30",
+        "publicKey": "charlie_pubkey",
+        "order": 2,
+        "registrationTime": 1756053445.601611
+      }
+    },
+    "ip_to_order": {
+      "192.168.1.10": 0,
+      "192.168.1.20": 1,
+      "192.168.1.30": 2
+    },
+    "next_order": 3
+  },
+  "tokens": {
+    "frozen_tokens": {
+      "alice": 300,
+      "bob": 450,
+      "charlie": 225
+    }
+  },
+  "turn_state": {
+    "current_turn": 0,
+    "current_seed": 0,
+    "seed_leader": "",
+    "votes": {
+      "alice": "accept_block_123",
+      "bob": "accept_block_123",
+      "charlie": "reject_block_123"
+    }
+  },
+  "malicious_reports": {},
+  "timestamp": 1756053445.6535912
+}
