@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# Consenso Blockchain Académico - Lanzador de Demo Unificado
 # ===========================================================
 # Lanzador rápido para la implementación del protocolo de consenso unificado
-# Autor: Miguel Villegas Nicholls (Optimizado)
 
-echo "🎓 Protocolo de Consenso Blockchain Académico - Implementación Unificada"
+echo "🎓 Protocolo de Consenso Blockchain - Implementación Unificada"
 echo "========================================================================"
 echo ""
 echo "🚀 Iniciando demostración de consenso unificado..."
