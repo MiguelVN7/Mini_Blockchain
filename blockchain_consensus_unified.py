@@ -1,21 +1,7 @@
 #!/usr/bin/env python3
 """
-Sistema de Consenso Distribuido para Blockchain - Versión Unificada
+Sistema de Consenso Distribuido para Blockchain
 ===================================================================
-Implementación completa y optimizada que cumple exactamente con la especificación académica.
-
-Autor: Miguel Villegas Nicholls
-Curso: Fundamentos de Blockchain
-Fecha: Agosto 2025
-
-CUMPLIMIENTO DE ESPECIFICACIÓN DEL PROTOCOLO:
-✅ Selección de líder: Rotación basada en dirección IP (interpretación de número de 32-bit)
-✅ Congelamiento de tokens: Firmas digitales para decisiones de compromiso de tokens
-✅ Número de consenso: 32-bit (2 bytes ronda + 2 bytes aleatorio del RNG de Python)
-✅ Aleatorio ponderado: Probabilidad proporcional a tokens congelados
-✅ Intercambio de resultados: Resultados cifrados con claves privadas
-✅ Verificación 2/3: Consenso tolerante a fallas bizantinas
-✅ Distribución de bloques: Validación de bloques firmados y detección de fraudes
 """
 
 import datetime
@@ -33,9 +19,9 @@ from pydantic import BaseModel
 import uvicorn
 import threading
 
-# ============================================================================
+
 # MODELOS DEL PROTOCOLO (Cumplimiento Exacto de Especificación)
-# ============================================================================
+
 
 class NodeRegisterReq(BaseModel):
     nodeId: str
@@ -71,9 +57,8 @@ class FraudReportReq(BaseModel):
     evidence: str
     signature: str
 
-# ============================================================================
+
 # PROVEEDOR CRIPTOGRÁFICO (GPG + Respaldo Simulado)
-# ============================================================================
 
 class CryptographicProvider:
     """Operaciones criptográficas con implementación real GPG y respaldo simulado."""
@@ -159,9 +144,9 @@ class CryptographicProvider:
         except:
             return b'\x00\x00\x00\x01'
 
-# ============================================================================
+
+
 # MOTOR DE PROTOCOLO DE CONSENSO (Especificación Exacta)
-# ============================================================================
 
 @dataclass
 class NetworkNode:
@@ -465,9 +450,8 @@ class ConsensusProtocolEngine:
         except Exception as e:
             print(f"Warning: Could not load state: {e}")
 
-# ============================================================================
+
 # INTEGRACIÓN BLOCKCHAIN
-# ============================================================================
 
 @dataclass
 class BlockchainTransaction:
@@ -590,12 +574,11 @@ class ConsensusValidatedBlockchain:
             "consensus_validated_blocks": len([b for b in self.chain if b.consensus_data.get("consensus_validated", False)])
         }
 
-# ============================================================================
+
 # API REST (FastAPI)
-# ============================================================================
 
 app = FastAPI(
-    title="Implementación de Protocolo de Consenso Académico",
+    title="Implementación de Protocolo de Consenso",
     description="Implementación exacta del protocolo de consenso blockchain distribuido",
     version="1.0.0"
 )
@@ -724,9 +707,8 @@ async def report_fraud(request: FraudReportReq):
     else:
         raise HTTPException(status_code=400, detail="Fraud reporting failed")
 
-# ============================================================================
+
 # SISTEMA DE DEMOSTRACIÓN
-# ============================================================================
 
 class AcademicDemonstration:
     """Demostración automatizada del protocolo de consenso completo."""
@@ -741,7 +723,7 @@ class AcademicDemonstration:
     
     def run_complete_demonstration(self):
         """Ejecutar demostración completa del protocolo."""
-        print("🎓 ACADEMIC CONSENSUS PROTOCOL DEMONSTRATION")
+        print("🎓 CONSENSUS PROTOCOL DEMONSTRATION")
         print("=" * 60)
         print("📋 Testing exact specification compliance...")
         
@@ -874,9 +856,9 @@ class AcademicDemonstration:
         print("✅ Block validation & distribution: IMPLEMENTED")
         print("✅ Fraud detection & expulsion: IMPLEMENTED")
 
-# ============================================================================
+
+
 # EJECUCIÓN PRINCIPAL
-# ============================================================================
 
 def start_api_server():
     """Iniciar servidor API en hilo separado."""
